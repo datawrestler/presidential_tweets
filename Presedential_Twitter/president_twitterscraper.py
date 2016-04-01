@@ -13,9 +13,16 @@ CONSUMER_SECRET = 'cU6KVPX6Fs4fdl8HNNfeM5H51GyBq8GpO07aYMYWRnUoNiEeAy'
 OAUTH_TOKEN = '2464948295-VEuAYV70fxxj7MbIQObktGOd3lyFrRD9awCKmA5'
 OAUTH_TOKEN_SECRET = 'yD8r3Y3awNWMA6wywGCpUcp3JEAqm2mNqWqU8gewGkv9U'
 
-db = pymongo.MongoClient("10.0.1.10", 27017)
-coll = db['presidential']
-coll.collection_names()
+
+# For testing purposes of mongodb
+# client = pymongo.MongoClient("10.0.1.10", 27017)
+# db = client.presidential
+# coll = db.presidential
+
+# cursor = coll.find()
+
+# for item in cursor:
+#     print(item['coordinates'])
 
 class MyStreamListener(StreamListener):
 
@@ -26,23 +33,27 @@ class MyStreamListener(StreamListener):
         self.tweetcount = 0
 
     def on_data(self, data):
-      #  if self.tweetcount % 1000 == 0:
-       #     try:
-        #        server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
-         #       server.starttls()
-         #       server.login("email", "password")
-         #       server.sendmail('email_from', 'phone_number', 'Currently working on tweet number {}!'.format(self.tweetcount))
-         #   except:
-         #       pass
+        if self.tweetcount % 1000 == 0:
+            try:
+                server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
+                server.starttls()
+                server.login("email", "password")
+                server.sendmail('email_from', 'phone_number', 'Currently working on tweet number {}!'.format(self.tweetcount))
+            except:
+                pass
         decoded = json.loads(HTMLParser().unescape(data))
         try:
             tweet = decoded['text']
             if decoded['coordinates']:
+                self.tweetcount += 1
+                print("Inserting tweet number {} into database".format(self.tweetcount))
                 print(decoded['coordinates'])
                 print(tweet)
                 print(decoded)
                 self.db.presidential.insert(json.loads(data))
             if decoded['geo']:
+                self.tweetcount += 1
+                print("Inserting tweet number {} into database".format(self.tweetcount))
                 print(decoded['geo'])
                 print(tweet)
                 print(decoded)
