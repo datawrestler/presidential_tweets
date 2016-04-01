@@ -6,6 +6,7 @@ from tweepy import OAuthHandler
 import smtplib
 import tweepy
 from HTMLParser import HTMLParser
+from tweepy import IncompleteRead
 
 # Define twitter authentication requirements
 CONSUMER_KEY = 'jqQe3zzpuRhHY8Tyc1uF03reg'
@@ -33,14 +34,6 @@ class MyStreamListener(StreamListener):
         self.tweetcount = 0
 
     def on_data(self, data):
-        if self.tweetcount % 1000 == 0:
-            try:
-                server = smtplib.SMTP("smtp.mail.yahoo.com", 587)
-                server.starttls()
-                server.login("email", "password")
-                server.sendmail('email_from', 'phone_number', 'Currently working on tweet number {}!'.format(self.tweetcount))
-            except:
-                pass
         decoded = json.loads(HTMLParser().unescape(data))
         try:
             tweet = decoded['text']
@@ -96,19 +89,26 @@ q = ['Trump', 'trump', 'Donald Trump', '#trump', '#Trump', 'Rubio', 'Marco Rubio
      'hilary for america', 'K for US', 'k for us', '#kforus', '#KforUS']
 
 
-try:
-    auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
-    auth.set_access_token(OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
-    api = tweepy.API(auth)
-    sapi = tweepy.streaming.Stream(auth, MyStreamListener(api))
-    sapi.filter(track=q)
-except KeyboardInterrupt:
-    print("Interupted by Keyboard")
+while True:
+    try:
+        auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+        auth.set_access_token(OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
+        api = tweepy.API(auth)
+        stream = tweepy.streaming.Stream(auth, MyStreamListener(api))
+        stream.filter(track=q)
+    except IOError, ex:
+        print("Just caught exception: %s" % ex)
+        pass
+    except KeyboardInterrupt:
+        stream.disconnect()
+        break
+
+
 
 if __name__ == '__main__':
     auth = OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
     auth.set_access_token(OAUTH_TOKEN, OAUTH_TOKEN_SECRET)
     api = tweepy.API(auth)
     sapi = tweepy.streaming.Stream(auth, MyStreamListener(api))
-    sapi.filter(track=q) #set async to True so stream will run on new thread
+    sapi.filter(track=q, async=True) #set async to True so stream will run on new thread
 
