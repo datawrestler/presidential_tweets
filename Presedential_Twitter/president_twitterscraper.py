@@ -8,10 +8,10 @@ import tweepy
 from HTMLParser import HTMLParser
 
 # Define twitter authentication requirements
-CONSUMER_KEY = 'jqQe3zzpuRhHY8Tyc1uF03reg'
-CONSUMER_SECRET = 'cU6KVPX6Fs4fdl8HNNfeM5H51GyBq8GpO07aYMYWRnUoNiEeAy'
-OAUTH_TOKEN = '2464948295-VEuAYV70fxxj7MbIQObktGOd3lyFrRD9awCKmA5'
-OAUTH_TOKEN_SECRET = 'yD8r3Y3awNWMA6wywGCpUcp3JEAqm2mNqWqU8gewGkv9U'
+CONSUMER_KEY = ''
+CONSUMER_SECRET = ''
+OAUTH_TOKEN = ''
+OAUTH_TOKEN_SECRET = ''
 
 
 # For testing purposes of mongodb
